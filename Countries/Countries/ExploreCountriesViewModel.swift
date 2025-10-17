@@ -11,12 +11,10 @@ class ExploreCountriesViewModel: ObservableObject {
     
     private let countriesService: CountriesService
     
-    // Inject the service protocol with a default concrete implementation
     init(countriesService: CountriesService = DefaultCountriesService()) {
         self.countriesService = countriesService
     }
     
-    // MARK: - Fetches countries and updates published properties
     @MainActor
     func fetchCountries() async {
         isLoading = true

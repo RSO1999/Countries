@@ -7,7 +7,6 @@ struct CountryRowView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            // Top line: "name, region" on left, "code" on right
             HStack {
                 Text("\(country.name), \(country.region.rawValue)")
                     .font(.headline)
@@ -17,7 +16,6 @@ struct CountryRowView: View {
                     .foregroundColor(.secondary)
             }
             
-            // Bottom line: capital
             Text(country.capital)
                 .font(.subheadline)
                 .foregroundColor(.secondary)

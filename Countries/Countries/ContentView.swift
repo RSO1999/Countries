@@ -19,12 +19,16 @@ struct ContentView: View {
                         await viewModel.fetchCountries()
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity) // HERE
+
             } else if viewModel.countries.isEmpty {
                 EmptyListView(action: {
                     Task {
                         await viewModel.fetchCountries()
                     }
                 })
+                .frame(maxWidth: .infinity, maxHeight: .infinity) // HERE
+
             } else {
                 ScrollView {
                     LazyVStack(spacing: 16) {
@@ -37,7 +41,6 @@ struct ContentView: View {
             }
         }
         .task {
-            // Initiate fetch on view appearance
             await viewModel.fetchCountries()
         }
     }

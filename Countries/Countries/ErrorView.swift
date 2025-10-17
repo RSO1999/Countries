@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 
-// MARK: - Supporting Views for State Feedback
 
 struct ErrorView: View {
     let errorMessage: String

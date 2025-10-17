@@ -17,6 +17,31 @@ final class CountriesUITests: XCTestCase {
 
         // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
     }
+    
+    
+    
+    @MainActor
+    func testAppLaunchesAndDisplaysList() throws {
+        // Arrange
+        let app = XCUIApplication()
+        
+        // Act
+        app.launch()
+        
+        // Assert - Wait for list to load and verify at least one element exists
+        let scrollView = app.scrollViews.firstMatch
+        XCTAssertTrue(scrollView.exists, "ScrollView should exist")
+        
+        // Wait for content to load (max 5 seconds)
+        let predicate = NSPredicate(format: "exists == true")
+        let scrollViewExpectation = XCTNSPredicateExpectation(predicate: predicate, object: scrollView)
+        let result = XCTWaiter().wait(for: [scrollViewExpectation], timeout: 5.0)
+        
+        XCTAssertEqual(result, .completed, "ScrollView should load within timeout")
+    }
+    
+    
+    
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
