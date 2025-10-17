@@ -1,24 +1,25 @@
-//
-//  ContentView.swift
-//  Countries
-//
-//  Created by Ryan Ortiz on 10/15/25.
-//
+
 
 import SwiftUI
 
 struct ContentView: View {
+    private let viewModel = ExploreCountriesViewModel()
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
-}
 
-#Preview {
-    ContentView()
+            
+            ScrollView {
+                LazyVStack(spacing: 16) {
+                    ForEach(viewModel.countries) { country in
+                        CountryRowView(country: country)
+                    }
+                }
+                .padding()
+            }
+        }
+        .task {
+            viewModel.fetchCountries()
+        }
+    }
 }
