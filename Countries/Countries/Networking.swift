@@ -16,10 +16,21 @@ final class DefaultCountriesService: CountriesService {
     private let urlString = "https://gist.githubusercontent.com/peymano-wmt/32dcb892b06648910ddd40406e37fdab/raw/db25946fd77c5873b0303b858e861ce724e0dcd0/countries.json"
     
     // Custom init for testing, defaulting to .shared (Minimal Over-engineering)
-    init(session: URLSession = .shared) {
-        self.session = session
-    }
     
+    init(session: URLSession? = nil) {
+        if let customSession = session {
+            // Use injected session (for testing)
+            self.session = customSession
+        } else {
+            // FIX: Create a custom configuration to explicitly disable the disk/memory cache.
+            // This ensures a failure when launched in airplane mode.
+            let configuration = URLSessionConfiguration.default
+            configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+            configuration.timeoutIntervalForRequest = 30.0 // Good practice for robustness
+            
+            self.session = URLSession(configuration: configuration)
+        }
+    }
     // MARK: - 3. Implementation of Typed Throws (Fixes applied)
     func fetchCountries() async throws(NetworkError) -> [Country] {
         guard let url = URL(string: urlString) else {

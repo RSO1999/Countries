@@ -43,6 +43,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				CountryRowView.swift,
+				ErrorView.swift,
 			);
 			target = CB3A60852EA0905F00090D77 /* CountriesUITests */;
 		};
