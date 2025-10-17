@@ -1,14 +1,14 @@
 
 
+// ContentView.swift
+
 import SwiftUI
 
 struct ContentView: View {
-    private let viewModel = ExploreCountriesViewModel()
+    @StateObject private var viewModel = ExploreCountriesViewModel()
     
     var body: some View {
         VStack {
-
-            
             ScrollView {
                 LazyVStack(spacing: 16) {
                     ForEach(viewModel.countries) { country in
@@ -19,7 +19,7 @@ struct ContentView: View {
             }
         }
         .task {
-            viewModel.fetchCountries()
+            await viewModel.fetchCountries()
         }
     }
 }

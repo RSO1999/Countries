@@ -1,19 +1,8 @@
 
-//
-//  CountryDataModel.swift
-//  Countries
-//
-//  Created by Ryan Ortiz on 10/15/25.
-//
-
-// This file was generated from JSON Schema using quicktype, do not modify it directly.
-// To parse the JSON, add this file to your project and do:
-//
-//   let countries = try? JSONDecoder().decode([Country].self, from: jsonData)
+// CountryDataModel.swift
 
 import Foundation
 
-// MARK: - Country
 struct Country: Codable, Identifiable {
     let capital, code: String
     let currency: Currency
@@ -26,13 +15,11 @@ struct Country: Codable, Identifiable {
 
 }
 
-// MARK: - Currency
 struct Currency: Codable {
     let code, name: String
     let symbol: String?
 }
 
-// MARK: - Language
 struct Language: Codable {
     let code: String?
     let name: String

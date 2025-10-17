@@ -1,7 +1,6 @@
 
+//CountryRowView.swift
 import SwiftUI
-
-
 
 struct CountryRowView: View {
     let country: Country

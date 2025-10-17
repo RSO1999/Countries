@@ -1,31 +1,38 @@
 
-import Foundation
-import Observation
+// ExploreCountriesViewModel.swift
 
-@Observable
-class ExploreCountriesViewModel {
-    var countries: [Country] = []
-    var isLoading = false
-    var errorMessage: String?
+import Foundation
+import Combine
+
+class ExploreCountriesViewModel: ObservableObject {
+    @Published var countries: [Country] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String?
     
+    private let countriesService: CountriesService
+    
+    // Inject the service protocol with a default concrete implementation
+    init(countriesService: CountriesService = DefaultCountriesService()) {
+        self.countriesService = countriesService
+    }
+    
+    // MARK: - Fetches countries and updates published properties
     @MainActor
-    func fetchCountries() {
+    func fetchCountries() async {
         isLoading = true
         errorMessage = nil
         
-        Task {
-            do {
-                let fetchedCountries = try await fetch()
-                await MainActor.run {
-                    self.countries = fetchedCountries
-                    self.isLoading = false
-                }
-            } catch {
-                await MainActor.run {
-                    self.errorMessage = error.localizedDescription
-                    self.isLoading = false
-                }
-            }
+        do {
+            // Directly call the async service
+            let fetchedCountries = try await countriesService.fetchCountries()
+            
+            self.countries = fetchedCountries
+            self.isLoading = false
+            
+        } catch {
+            // Caught error from the service
+            self.errorMessage = error.localizedDescription
+            self.isLoading = false
         }
     }
 }

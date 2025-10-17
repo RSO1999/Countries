@@ -1,0 +1,81 @@
+
+import Foundation
+
+// MARK: - Error Definition (No Change Required Here, but included for context)
+enum NetworkError: LocalizedError, Error { // Ensure it conforms to Error
+    case invalidURL
+    case invalidResponse
+    case decodingFailed
+    case serverError(Int)
+    case requestTimeout
+    // ... errorDescription implementation remains the same
+    
+    var errorDescription: String? {
+        // ... (existing implementation)
+        switch self {
+        case .invalidURL: return "Invalid URL"
+        case .invalidResponse: return "Invalid server response"
+        case .decodingFailed: return "Failed to parse data"
+        case .serverError(let code): return "Server error: \(code)"
+        case .requestTimeout: return "Request timed out"
+        }
+    }
+}
+
+
+
+import Foundation
+
+// MARK: - 1. Dependency Injection Protocol
+// Conforming to Sendable ensures thread safety when used in concurrent contexts
+protocol CountriesService: Sendable {
+    func fetchCountries() async throws -> [Country]
+}
+
+// MARK: - 2. Concrete Implementation & URLSession Best Practices
+final class DefaultCountriesService: CountriesService {
+    
+    private let session: URLSession
+    private let urlString = "https://gist.githubusercontent.com/peymano-wmt/32dcb892b06648910ddd40406e37fdab/raw/db25946fd77c5873b0303b858e861ce724e0dcd0/countries.json"
+    
+    // Custom Configuration for control (Best Practice)
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
+    
+    // MARK: - 3. Typed Throws Implementation
+    func fetchCountries() async throws -> [Country] {
+        guard let url = URL(string: urlString) else {
+            throw NetworkError.invalidURL
+        }
+        
+        do {
+            let (data, response) = try await session.data(from: url)
+            
+            // Handle the response (Typed Throws)
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw NetworkError.invalidResponse // Not an HTTP response
+            }
+            
+            guard (200...299).contains(httpResponse.statusCode) else {
+                // Map status code to custom error
+                throw NetworkError.serverError(httpResponse.statusCode)
+            }
+            
+            // Decode the data
+            let decoder = JSONDecoder()
+            return try decoder.decode([Country].self, from: data)
+            
+        } catch is DecodingError {
+            throw NetworkError.decodingFailed
+        } catch let urlError as URLError where urlError.code == .timedOut {
+            throw NetworkError.requestTimeout
+        } catch let networkError as NetworkError {
+            // Re-throw our custom errors
+            throw networkError
+        } catch {
+            // Catch-all for any unhandled URLError (e.g., connectivity)
+            throw NetworkError.invalidResponse
+        }
+    }
+}
